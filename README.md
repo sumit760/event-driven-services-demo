@@ -4,163 +4,339 @@ A comprehensive demonstration of event-driven microservices architecture using m
 
 ## 🏗️ Architecture Overview
 
-This demo showcases a realistic e-commerce order processing system built with:
+This demo showcases a complete event-driven microservices system with the following components:
 
-- **🔄 Event Streaming**: Apache Kafka for asynchronous communication
-- **⚡ Service Communication**: gRPC for high-performance synchronous calls  
-- **🚀 Application Runtime**: Dapr for service mesh capabilities
-- **☸️ Orchestration**: Kubernetes for deployment and service discovery
-- **🐳 Containerization**: Docker for consistent environments
+### 🔧 Technology Stack
+- **Message Queue**: Apache Kafka for reliable event streaming
+- **Communication Protocol**: gRPC for high-performance service-to-service communication
+- **Application Runtime**: Dapr for simplified microservices development
+- **Service Discovery**: Kubernetes-native service discovery
+- **Deployment**: Kubernetes with Docker containers
+- **Programming Language**: Go for all microservices
 
-## 🎯 Business Scenario
+### 🏢 Services Architecture
 
-The demo simulates an e-commerce order processing workflow:
-
-1. **Order Creation** → Customer places an order
-2. **Inventory Check** → System validates product availability  
-3. **Payment Processing** → Payment is processed and verified
-4. **Notifications** → Customer and staff receive updates
-5. **Order Fulfillment** → Order status updates throughout the process
-
-## 🏛️ Service Architecture
-
-```mermaid
-graph TB
-    Client[Client Applications] --> Gateway[API Gateway]
-    Gateway --> Order[Order Service<br/>Go + gRPC]
-    Gateway --> Inventory[Inventory Service<br/>Python + gRPC]
-    Gateway --> Payment[Payment Service<br/>Java + gRPC]
-    
-    Order --> Kafka[Apache Kafka]
-    Inventory --> Kafka
-    Payment --> Kafka
-    Kafka --> Notification[Notification Service<br/>Node.js]
-    
-    Order -.->|gRPC via Dapr| Inventory
-    Order -.->|gRPC via Dapr| Payment
-    
-    subgraph "Dapr Runtime"
-        Dapr[Service Mesh<br/>Pub/Sub<br/>State Management]
-    end
-    
-    subgraph "Kubernetes Cluster"
-        Order
-        Inventory  
-        Payment
-        Notification
-        Gateway
-        Kafka
-        Redis[(Redis<br/>State Store)]
-    end
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Order Service │    │Inventory Service│    │Notification Svc │
+│     (gRPC)      │    │     (gRPC)      │    │     (HTTP)      │
+└─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
+          │                      │                      │
+          └──────────┬───────────┴──────────────────────┘
+                     │
+          ┌─────────────────┐
+          │   Apache Kafka  │
+          │  (Event Stream) │
+          └─────────────────┘
+                     │
+          ┌─────────────────┐
+          │      Dapr       │
+          │ (App Runtime)   │
+          └─────────────────┘
+                     │
+          ┌─────────────────┐
+          │   Kubernetes    │
+          │   (Orchestration)│
+          └─────────────────┘
 ```
 
-## 🛠️ Technology Stack
+## 🚀 Services
 
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| **Order Service** | Go + gRPC | Order management and orchestration |
-| **Inventory Service** | Python + gRPC | Product inventory management |
-| **Payment Service** | Java + gRPC | Payment processing |
-| **Notification Service** | Node.js | Event-driven notifications |
-| **API Gateway** | Go + REST | External API aggregation |
-| **Message Broker** | Apache Kafka | Event streaming |
-| **State Store** | Redis | Distributed state management |
-| **Service Mesh** | Dapr | Service discovery, pub/sub, state |
-| **Orchestration** | Kubernetes | Container orchestration |
+### 1. Order Service (gRPC)
+- **Port**: 50051
+- **Protocol**: gRPC
+- **Responsibilities**:
+  - Create and manage customer orders
+  - Validate order data and inventory availability
+  - Publish order events to Kafka
+  - Handle order lifecycle (create, update, cancel)
+
+**Key Features**:
+- Order creation with inventory validation
+- Order status management
+- Event-driven notifications
+- Customer order history
+
+### 2. Inventory Service (gRPC)
+- **Port**: 50052
+- **Protocol**: gRPC
+- **Responsibilities**:
+  - Manage product inventory levels
+  - Handle inventory reservations
+  - Process inventory updates
+  - Validate product availability
+
+**Key Features**:
+- Real-time inventory tracking
+- Automatic stock level updates
+- Product availability checks
+- Inventory reservation system
+
+### 3. Notification Service (HTTP)
+- **Port**: 8080
+- **Protocol**: HTTP REST
+- **Responsibilities**:
+  - Process notification events from Kafka
+  - Send notifications via multiple channels
+  - Handle notification delivery status
+  - Manage notification templates
+
+**Key Features**:
+- Multi-channel notifications (Email, SMS, Push, Webhook)
+- Event-driven processing
+- Delivery status tracking
+- Template-based messaging
+
+## 🛠️ Prerequisites
+
+Before running this demo, ensure you have the following installed:
+
+- **Docker**: For containerization
+- **Kubernetes**: Local cluster (minikube, kind, or Docker Desktop)
+- **kubectl**: Kubernetes command-line tool
+- **Go**: Version 1.19 or later
+- **Git**: For cloning the repository
+
+### Optional Tools
+- **Dapr CLI**: For Dapr management (will be installed automatically)
+- **Helm**: For advanced Kubernetes deployments
 
 ## 🚀 Quick Start
 
-### Prerequisites
-
-- Docker & Docker Compose
-- Kubernetes cluster (local or cloud)
-- Dapr CLI
-- kubectl
-
-### Local Development
-
+### 1. Clone the Repository
 ```bash
-# Clone the repository
 git clone https://github.com/sumit760/event-driven-services-demo.git
 cd event-driven-services-demo
+```
 
-# Start the entire stack locally
+### 2. Deploy the Complete System
+```bash
+# Make scripts executable
+chmod +x scripts/*.sh
+
+# Deploy everything with one command
 ./scripts/deploy-local.sh
-
-# Test the system
-python examples/client/order-client.py
 ```
 
-### Kubernetes Deployment
+This script will:
+- ✅ Check prerequisites
+- ✅ Install and configure Dapr
+- ✅ Deploy Apache Kafka
+- ✅ Deploy Dapr components
+- ✅ Build and deploy all microservices
+- ✅ Verify the deployment
 
+### 3. Test the System
+
+#### Test gRPC Services (Order & Inventory)
 ```bash
+cd examples/grpc-client
+go mod tidy
+go run main.go
+```
+
+#### Test HTTP Service (Notifications)
+```bash
+cd examples/http-client
+go mod tidy
+go run main.go
+```
+
+## 📋 Manual Deployment (Step by Step)
+
+If you prefer to deploy components individually:
+
+### 1. Install Dapr
+```bash
+# Install Dapr CLI
+curl -fsSL https://raw.githubusercontent.com/dapr/cli/master/install/install.sh | /bin/bash
+
+# Initialize Dapr in Kubernetes
+dapr init -k --wait
+```
+
+### 2. Deploy Kafka
+```bash
+kubectl create namespace kafka
+kubectl apply -f k8s/infrastructure/kafka.yaml
+```
+
+### 3. Deploy Dapr Components
+```bash
+kubectl apply -f k8s/dapr/
+```
+
+### 4. Build and Deploy Services
+```bash
+# Build Docker images
+docker build -t order-service:latest services/order-service/
+docker build -t inventory-service:latest services/inventory-service/
+docker build -t notification-service:latest services/notification-service/
+
 # Deploy to Kubernetes
-./scripts/deploy-k8s.sh
-
-# Check deployment status
-kubectl get pods -n demo
-
-# Access the API Gateway
-kubectl port-forward svc/api-gateway 8080:80 -n demo
+kubectl apply -f k8s/services/
 ```
 
-## 📚 Documentation
+## 🔍 Monitoring and Debugging
 
-- [📖 Architecture Deep Dive](docs/architecture.md)
-- [🔧 Setup & Installation](docs/setup.md)
-- [🔌 API Documentation](docs/api.md)
-- [📊 Event Schemas](docs/events.md)
-- [🐛 Troubleshooting](docs/troubleshooting.md)
+### View Service Status
+```bash
+# Check pod status
+kubectl get pods
 
-## 🧪 Testing
+# Check service endpoints
+kubectl get services
+
+# View Dapr sidecars
+dapr list -k
+```
+
+### Access Logs
+```bash
+# Order service logs
+kubectl logs -l app=order-service -c order-service
+
+# Inventory service logs
+kubectl logs -l app=inventory-service -c inventory-service
+
+# Notification service logs
+kubectl logs -l app=notification-service -c notification-service
+
+# Dapr sidecar logs
+kubectl logs -l app=order-service -c daprd
+```
+
+### Dapr Dashboard
+```bash
+# Launch Dapr dashboard
+dapr dashboard -k
+```
+
+### Kafka Monitoring
+```bash
+# Check Kafka topics
+kubectl exec -it kafka-0 -n kafka -- kafka-topics.sh --bootstrap-server localhost:9092 --list
+
+# View topic messages
+kubectl exec -it kafka-0 -n kafka -- kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic order-events --from-beginning
+```
+
+## 🧪 Testing Scenarios
+
+### Scenario 1: Complete Order Flow
+1. Create an order via gRPC client
+2. Verify inventory check
+3. Confirm order creation event in Kafka
+4. Check notification delivery
+
+### Scenario 2: Inventory Management
+1. Check product availability
+2. Reserve inventory for order
+3. Update stock levels
+4. Handle out-of-stock scenarios
+
+### Scenario 3: Event Processing
+1. Monitor Kafka topics for events
+2. Verify event consumption by notification service
+3. Check notification delivery across channels
+4. Validate event ordering and reliability
+
+## 🔧 Configuration
+
+### Environment Variables
+Each service supports configuration via environment variables:
+
+#### Order Service
+- `DAPR_HTTP_PORT`: Dapr HTTP port (default: 3500)
+- `DAPR_GRPC_PORT`: Dapr gRPC port (default: 50001)
+- `SERVICE_PORT`: Service port (default: 50051)
+
+#### Inventory Service
+- `DAPR_HTTP_PORT`: Dapr HTTP port (default: 3501)
+- `DAPR_GRPC_PORT`: Dapr gRPC port (default: 50002)
+- `SERVICE_PORT`: Service port (default: 50052)
+
+#### Notification Service
+- `DAPR_HTTP_PORT`: Dapr HTTP port (default: 3502)
+- `SERVICE_PORT`: Service port (default: 8080)
+
+### Dapr Components
+- **State Store**: Redis for persistent state
+- **Pub/Sub**: Kafka for event streaming
+- **Service Invocation**: mTLS enabled
+
+## 🧹 Cleanup
+
+To remove all deployed resources:
 
 ```bash
-# Run integration tests
-python -m pytest tests/integration/
-
-# Load testing
-./scripts/load-test.sh
-
-# Monitor system health
-./scripts/health-check.sh
+./scripts/cleanup.sh
 ```
 
-## 📈 Observability
+This will:
+- Remove all services and deployments
+- Clean up Dapr components
+- Remove Kafka installation
+- Optionally remove Dapr and Docker images
 
-The demo includes comprehensive observability:
+## 📚 Learning Resources
 
-- **Metrics**: Prometheus + Grafana dashboards
-- **Tracing**: Jaeger distributed tracing
-- **Logging**: Structured logging with correlation IDs
-- **Health Checks**: Kubernetes liveness/readiness probes
+### Key Concepts Demonstrated
+- **Event-Driven Architecture**: Loose coupling via events
+- **Microservices Patterns**: Service decomposition and communication
+- **Cloud-Native Development**: Kubernetes, containers, and service mesh
+- **Observability**: Logging, monitoring, and tracing
+- **Resilience**: Circuit breakers, retries, and timeouts
 
-## 🎓 Learning Objectives
-
-This demo teaches:
-
-1. **Event-Driven Architecture** patterns and best practices
-2. **Microservices Communication** via gRPC and events
-3. **Dapr Integration** for cloud-native applications
-4. **Kubernetes Deployment** strategies
-5. **Observability** in distributed systems
-6. **Testing Strategies** for microservices
+### Further Reading
+- [Dapr Documentation](https://docs.dapr.io/)
+- [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+- [gRPC Documentation](https://grpc.io/docs/)
+- [Kubernetes Documentation](https://kubernetes.io/docs/)
+- [Event-Driven Architecture Patterns](https://microservices.io/patterns/data/event-driven-architecture.html)
 
 ## 🤝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests
+4. Add tests if applicable
 5. Submit a pull request
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🆘 Troubleshooting
 
-- [Dapr](https://dapr.io/) for the excellent service mesh runtime
-- [Apache Kafka](https://kafka.apache.org/) for reliable event streaming
-- [gRPC](https://grpc.io/) for efficient service communication
-- [Kubernetes](https://kubernetes.io/) for container orchestration
+### Common Issues
+
+#### Services Not Starting
+- Check if Dapr is properly initialized: `dapr list -k`
+- Verify Kubernetes cluster is running: `kubectl cluster-info`
+- Check resource availability: `kubectl describe nodes`
+
+#### gRPC Connection Issues
+- Verify service endpoints: `kubectl get services`
+- Check if ports are correctly exposed
+- Ensure firewall rules allow traffic
+
+#### Kafka Connection Issues
+- Check Kafka pod status: `kubectl get pods -n kafka`
+- Verify Kafka service is accessible
+- Check Dapr pub/sub component configuration
+
+#### Build Issues
+- Ensure Go version 1.19 or later
+- Run `go mod tidy` in service directories
+- Check Docker daemon is running
+
+### Getting Help
+- Check the [Issues](https://github.com/sumit760/event-driven-services-demo/issues) page
+- Review service logs for error messages
+- Consult Dapr and Kubernetes documentation
+
+---
+
+**Happy coding! 🚀**
 
