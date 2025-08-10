@@ -1,6 +1,6 @@
 module github.com/sumit760/event-driven-services-demo/services/order-service
 
-go 1.21
+go 1.19
 
 require (
 	github.com/dapr/go-sdk v1.9.0
@@ -10,10 +10,12 @@ require (
 )
 
 require (
+	github.com/dapr/dapr v1.12.0-rc.4 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231016165738-49dd2c1f3d0b // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-

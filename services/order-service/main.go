@@ -311,7 +311,10 @@ func (s *OrderService) checkInventoryAvailability(ctx context.Context, items []*
 			return false, err
 		}
 
-		resp, err := s.daprClient.InvokeMethod(ctx, "inventory-service", "check-availability", "POST", reqData)
+		resp, err := s.daprClient.InvokeMethodWithContent(ctx, "inventory-service", "check-availability", "POST", &client.DataContent{
+			Data:        reqData,
+			ContentType: "application/json",
+		})
 		if err != nil {
 			log.Printf("Failed to call inventory service: %v", err)
 			// For demo purposes, assume inventory is available if service is not reachable
@@ -366,4 +369,3 @@ func main() {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 }
-

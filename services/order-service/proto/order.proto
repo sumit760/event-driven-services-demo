@@ -116,4 +116,3 @@ message ListOrdersResponse {
   string next_page_token = 2;
   int32 total_count = 3;
 }
-

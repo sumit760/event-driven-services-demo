@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM golang:1.19-alpine AS builder
 
 WORKDIR /app
 
@@ -13,9 +13,9 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Generate protobuf files
-RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+# Generate protobuf files (compatible versions for Go 1.19)
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28.1
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2.0
 RUN protoc --go_out=. --go-grpc_out=. proto/order.proto
 
 # Build the application
@@ -39,4 +39,3 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
 
 # Run the application
 CMD ["./main"]
-
