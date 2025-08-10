@@ -1,0 +1,94 @@
+syntax = "proto3";
+
+package inventory;
+
+option python_package = "inventory_pb2";
+
+// Inventory service definition
+service InventoryService {
+  rpc CheckAvailability(CheckAvailabilityRequest) returns (CheckAvailabilityResponse);
+  rpc ReserveInventory(ReserveInventoryRequest) returns (ReserveInventoryResponse);
+  rpc ReleaseInventory(ReleaseInventoryRequest) returns (ReleaseInventoryResponse);
+  rpc UpdateInventory(UpdateInventoryRequest) returns (UpdateInventoryResponse);
+  rpc GetInventory(GetInventoryRequest) returns (GetInventoryResponse);
+}
+
+// Product inventory message
+message ProductInventory {
+  string product_id = 1;
+  string product_name = 2;
+  int32 available_quantity = 3;
+  int32 reserved_quantity = 4;
+  int32 total_quantity = 5;
+  double unit_price = 6;
+  string last_updated = 7;
+}
+
+// Check availability request
+message CheckAvailabilityRequest {
+  string product_id = 1;
+  int32 quantity = 2;
+}
+
+// Check availability response
+message CheckAvailabilityResponse {
+  bool available = 1;
+  int32 available_quantity = 2;
+  string message = 3;
+}
+
+// Reserve inventory request
+message ReserveInventoryRequest {
+  string product_id = 1;
+  int32 quantity = 2;
+  string order_id = 3;
+  string customer_id = 4;
+}
+
+// Reserve inventory response
+message ReserveInventoryResponse {
+  bool success = 1;
+  string reservation_id = 2;
+  string message = 3;
+}
+
+// Release inventory request
+message ReleaseInventoryRequest {
+  string product_id = 1;
+  int32 quantity = 2;
+  string order_id = 3;
+  string reservation_id = 4;
+}
+
+// Release inventory response
+message ReleaseInventoryResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Update inventory request
+message UpdateInventoryRequest {
+  string product_id = 1;
+  int32 quantity_change = 2;
+  string reason = 3;
+}
+
+// Update inventory response
+message UpdateInventoryResponse {
+  bool success = 1;
+  ProductInventory inventory = 2;
+  string message = 3;
+}
+
+// Get inventory request
+message GetInventoryRequest {
+  string product_id = 1;
+}
+
+// Get inventory response
+message GetInventoryResponse {
+  ProductInventory inventory = 1;
+  bool success = 2;
+  string message = 3;
+}
+

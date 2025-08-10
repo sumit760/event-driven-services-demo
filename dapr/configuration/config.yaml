@@ -1,0 +1,56 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: demo-config
+  namespace: default
+spec:
+  tracing:
+    samplingRate: "1"
+    zipkin:
+      endpointAddress: "http://jaeger:14268/api/traces"
+  metric:
+    enabled: true
+  mtls:
+    enabled: false
+    workloadCertTTL: "24h"
+    allowedClockSkew: "15m"
+  secrets:
+    scopes:
+      - storeName: "kubernetes"
+        defaultAccess: "allow"
+  accessControl:
+    defaultAction: "allow"
+    trustDomain: "demo"
+    policies:
+    - appId: "order-service"
+      defaultAction: "allow"
+      trustDomain: "demo"
+      namespace: "default"
+    - appId: "inventory-service"
+      defaultAction: "allow"
+      trustDomain: "demo"
+      namespace: "default"
+    - appId: "payment-service"
+      defaultAction: "allow"
+      trustDomain: "demo"
+      namespace: "default"
+    - appId: "notification-service"
+      defaultAction: "allow"
+      trustDomain: "demo"
+      namespace: "default"
+  nameResolution:
+    component: "mdns"
+    version: "v1"
+    configuration:
+      name: "demo-name-resolution"
+  httpPipeline:
+    handlers:
+    - name: "cors"
+      type: "middleware.http.cors"
+    - name: "oauth2"
+      type: "middleware.http.oauth2"
+  appHttpPipeline:
+    handlers:
+    - name: "cors"
+      type: "middleware.http.cors"
+

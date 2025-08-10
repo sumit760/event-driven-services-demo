@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package order;
+
+option go_package = "github.com/sumit760/event-driven-services-demo/services/order-service/proto";
+
+// Order service definition
+service OrderService {
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse);
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse);
+  rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse);
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse);
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse);
+}
+
+// Order status enumeration
+enum OrderStatus {
+  ORDER_STATUS_UNSPECIFIED = 0;
+  ORDER_STATUS_PENDING = 1;
+  ORDER_STATUS_CONFIRMED = 2;
+  ORDER_STATUS_PROCESSING = 3;
+  ORDER_STATUS_SHIPPED = 4;
+  ORDER_STATUS_DELIVERED = 5;
+  ORDER_STATUS_CANCELLED = 6;
+  ORDER_STATUS_FAILED = 7;
+}
+
+// Order item message
+message OrderItem {
+  string product_id = 1;
+  string product_name = 2;
+  int32 quantity = 3;
+  double unit_price = 4;
+  double total_price = 5;
+}
+
+// Order message
+message Order {
+  string order_id = 1;
+  string customer_id = 2;
+  string customer_email = 3;
+  repeated OrderItem items = 4;
+  double total_amount = 5;
+  OrderStatus status = 6;
+  string created_at = 7;
+  string updated_at = 8;
+  string shipping_address = 9;
+  string payment_method = 10;
+}
+
+// Create order request
+message CreateOrderRequest {
+  string customer_id = 1;
+  string customer_email = 2;
+  repeated OrderItem items = 3;
+  string shipping_address = 4;
+  string payment_method = 5;
+}
+
+// Create order response
+message CreateOrderResponse {
+  Order order = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// Get order request
+message GetOrderRequest {
+  string order_id = 1;
+}
+
+// Get order response
+message GetOrderResponse {
+  Order order = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// Update order request
+message UpdateOrderRequest {
+  string order_id = 1;
+  OrderStatus status = 2;
+  string notes = 3;
+}
+
+// Update order response
+message UpdateOrderResponse {
+  Order order = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// Cancel order request
+message CancelOrderRequest {
+  string order_id = 1;
+  string reason = 2;
+}
+
+// Cancel order response
+message CancelOrderResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// List orders request
+message ListOrdersRequest {
+  string customer_id = 1;
+  int32 page_size = 2;
+  string page_token = 3;
+  OrderStatus status_filter = 4;
+}
+
+// List orders response
+message ListOrdersResponse {
+  repeated Order orders = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+

@@ -1,0 +1,94 @@
+apiVersion: dapr.io/v1alpha1
+kind: Component
+metadata:
+  name: kafka-pubsub
+  namespace: default
+spec:
+  type: pubsub.kafka
+  version: v1
+  metadata:
+  - name: brokers
+    value: "kafka:9092"
+  - name: consumerGroup
+    value: "demo-group"
+  - name: clientID
+    value: "demo-client"
+  - name: authType
+    value: "none"
+  - name: maxMessageBytes
+    value: "1024000"
+  - name: consumeRetryInterval
+    value: "200ms"
+  - name: version
+    value: "2.6.0"
+scopes:
+- order-service
+- inventory-service
+- payment-service
+- notification-service
+---
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: order-created-subscription
+  namespace: default
+spec:
+  topic: order.created
+  route: /order-created
+  pubsubname: kafka-pubsub
+scopes:
+- inventory-service
+- payment-service
+- notification-service
+---
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: order-updated-subscription
+  namespace: default
+spec:
+  topic: order.updated
+  route: /order-updated
+  pubsubname: kafka-pubsub
+scopes:
+- notification-service
+---
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: order-cancelled-subscription
+  namespace: default
+spec:
+  topic: order.cancelled
+  route: /order-cancelled
+  pubsubname: kafka-pubsub
+scopes:
+- inventory-service
+- notification-service
+---
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: inventory-reserved-subscription
+  namespace: default
+spec:
+  topic: inventory.reserved
+  route: /inventory-reserved
+  pubsubname: kafka-pubsub
+scopes:
+- payment-service
+- notification-service
+---
+apiVersion: dapr.io/v1alpha1
+kind: Subscription
+metadata:
+  name: payment-processed-subscription
+  namespace: default
+spec:
+  topic: payment.processed
+  route: /payment-processed
+  pubsubname: kafka-pubsub
+scopes:
+- order-service
+- notification-service
+
