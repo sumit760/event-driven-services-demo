@@ -1,11 +1,29 @@
-# Perform PR summary
-name: PR Summarizer
+# .github/workflows/use-shared-pr-summarizer.yml
+name: PR Summarizer (Shared)
+
 on:
   pull_request:
-    types: [opened, reopened, synchronize, ready_for_review]
+    types: [opened, reopened, synchronize, ready_for_review, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
-  call-shared:
-    uses: sumit760/ai-templates/.github/workflows/pr-summarizer.yml@v1
+  summarize:
+    uses: sumit760/ai-templates/.github/workflows/pr-summarizer.yml@v1   # <-- the callee
+    with:
+      model_name: gpt-4o-mini
+      summary_tone: concise
+      max_input_chars: 220000
+      exclude_globs: |
+        **/*.lock
+        **/*.min.js
+        **/*.map
+        **/*.png
+        **/*.jpg
+        **/*.jpeg
+        **/*.gif
+        **/*.pdf
     secrets:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}   # or: secrets: inherit
