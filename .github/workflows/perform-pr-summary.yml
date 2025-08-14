@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   summarize:
-    uses: sumit760/ai-templates/.github/workflows/pr-summarizer.yml@main   # <-- the callee
+    uses: sumit760/ai-templates/.github/workflows/pr-summarizer.yml@master   # <-- the callee
     with:
       model_name: gpt-4o-mini
       summary_tone: concise
