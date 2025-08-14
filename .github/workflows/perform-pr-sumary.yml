@@ -1,0 +1,11 @@
+# Perform PR summary
+name: PR Summarizer
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+
+jobs:
+  call-shared:
+    uses: ai-templates/.github/workflows/pr-summarizer.yml@v1
+    secrets:
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
