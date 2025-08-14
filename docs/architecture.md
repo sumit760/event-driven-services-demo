@@ -300,4 +300,5 @@ sequenceDiagram
 - **Multi-Region**: Deploy across multiple regions
 - **Service Mesh**: Istio or Linkerd for advanced traffic management
 - **GitOps**: Automated deployment with ArgoCD or Flux or ArgoRollout for Canary deployment
+- **Continuous Promotion**: Automated promotion to non-prod environments
 
