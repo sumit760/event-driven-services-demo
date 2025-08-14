@@ -8,7 +8,7 @@ This guide will help you set up and run the Event-Driven Microservices Demo in d
 
 - **Docker** (v20.10+) and **Docker Compose** (v2.0+)
 - **Git** for cloning the repository
-- **Python 3.8+** for running client examples
+- **Python 3.9+** for running client examples
 - **kubectl** (for Kubernetes deployment)
 - **Dapr CLI** (for local Dapr development)
 
