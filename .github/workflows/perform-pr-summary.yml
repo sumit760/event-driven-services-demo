@@ -6,6 +6,6 @@ on:
 
 jobs:
   call-shared:
-    uses: ai-templates/.github/workflows/pr-summarizer.yml@v1
+    uses: sumit760/ai-templates/.github/workflows/pr-summarizer.yml@v1
     secrets:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
